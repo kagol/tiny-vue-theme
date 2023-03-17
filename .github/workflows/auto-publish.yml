@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: CheckOut Code
         uses: actions/checkout@master
+        with:
+          ref: release
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -24,15 +26,12 @@ jobs:
           npm run build
           npm run release
 
-      - name: Publish
-        run: npm publish opentiny-vue-theme-${{ github.ref_name }}.tgz
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Release
+        if: contains(github.ref_name, 'alpha') == false
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true
         env:
-          GITHUB_TOKEN: ${{  secrets.GITHUB_TOKEN  }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
